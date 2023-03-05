@@ -19,7 +19,7 @@ if [ -z "$(ls -A ${MONGO_DATA_DIR}/journal)" ]; then
 	MONGO_PID=$!  
 	echo "=>Mongo running at $MONGO_PID" 
 	echo "Waiting for mongo to start " 
-	sleep 20 
+	sleep 30 
 	echo "=> Creating pacman database ..."
 	mongosh < /mongodb/scripts/initmongo
 	mongosh < /mongodb/scripts/showmongo    
@@ -32,13 +32,16 @@ if [ -z "$(ls -A ${MONGO_DATA_DIR}/journal)" ]; then
 	do   
 		OUTPUT=$(mongosh < /mongodb/scripts/showmongo)
 		echo $OUTPUT 
+		echo 
 		if echo "$OUTPUT" | grep -q "ECONNREFUSED"; then
-   			echo "ECONNREFUSED Mongo died ?"
+   			echo "$REP ECONNREFUSED Mongo died ?"
 			let REP--
 			if [ $REP == 0 ]
 			then
 				break 
-			fi 
+			fi
+		else  
+   			echo "$REP ALL GOOD"
 		fi
 	done 
 	echo "Falling to full mongo " 
