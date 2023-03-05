@@ -30,9 +30,12 @@ if [ -z "$(ls -A ${MONGO_DATA_DIR}/journal)" ]; then
 	REP=10
 	while true
 	do   
-		OUTPUT=$(mongosh < /mongodb/scripts/showmongo)
-		echo $OUTPUT 
-		echo 
+		echo "$$$"
+		OUTPUT=$(mongosh < /mongodb/scripts/showmongo 2>&1)
+		echo "-$-"
+		echo "---"
+		echo $OUTPUT  
+		echo "^^^"
 		if echo "$OUTPUT" | grep -q "ECONNREFUSED"; then
    			echo "$REP ECONNREFUSED Mongo died ?"
 			let REP--
@@ -43,7 +46,8 @@ if [ -z "$(ls -A ${MONGO_DATA_DIR}/journal)" ]; then
 		else  
    			echo "$REP ALL GOOD"
 		fi
-	done 
+		sleep 10
+	done   
 	echo "Falling to full mongo " 
 else
 	echo "=> Using an existing volume of MongoDB"
