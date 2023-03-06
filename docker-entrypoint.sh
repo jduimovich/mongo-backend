@@ -29,26 +29,21 @@ if [ -z "$(ls -A ${MONGO_DATA_DIR}/journal)" ]; then
 	echo "wait completed is mongo running " 
 	REP=10
 	while true
-	do   
-		echo "$$$"
-		OUTPUT=$(mongosh < /mongodb/scripts/showmongo 2>&1)
-		echo "-$-"
-		echo "---"
-		echo $OUTPUT  
-		echo "^^^"
+	do    
+		OUTPUT=$(mongosh < /mongodb/scripts/showmongo 2>&1)  
 		if echo "$OUTPUT" | grep -q "ECONNREFUSED"; then
-   			echo "$REP ECONNREFUSED Mongo died ?"
+   			echo "$REP ECONNREFUSED - Mongo service missing"
 			let REP--
 			if [ $REP == 0 ]
 			then
 				break 
 			fi
 		else  
-   			echo "$REP ALL GOOD"
+   			echo "$REP Mongo service ok"
 		fi
 		sleep 10
 	done   
-	echo "Falling to full mongo " 
+	echo "Mongo backend terminated - restarting mongo" 
 else
 	echo "=> Using an existing volume of MongoDB"
 fi
@@ -62,6 +57,6 @@ exec "$MONGO_HOME/bin/mongod"  --dbpath "$MONGO_DATA_DIR"   --bind_ip_all $CMDAR
 #exec "$@"
  
 echo "FATAL - Mongo exited "  
-echo "Waiting 10 minutes for debug"
+echo "Waiting 10 minutes to allow debug"
 sleep 600 
-echo "Exit for and this will restart pod "
+echo "When this exits, the pod will restart."
